@@ -499,78 +499,33 @@ namespace BefreundeteZahlenBerechnen
                 t40.Start();
             }
         }
-
-        static void calc(int number, int endnumber, int thread)
+        static void calc(int startNumber, int endNumber, int thread)
         {
             worked(thread);
             int number1 = 0;
-            int number2 = number;
-            for (int i = 0; i < 1; i++)
-            {
-                while (number2 <= endnumber)
-                {
-                    if (number1 >= loop)
-                    {
-                        number1 = 0;
-                        number2++;
-                    }
-                    else
-                    {
-                        int result1 = 0;
-                        int result2 = 0;
-                        List<int> result1list = new List<int>();
-                        List<int> result2list = new List<int>();
-                        for (int e = 1; e < number1; e++)
-                        {
-                            if ((number1 % e) == 0)
-                            {
-                                result1list.Add(e);
-                            }
-                        }
-                        for (int e = 0; e < result1list.Count; e++)
-                        {
-                            if (result1 == 0)
-                            {
-                                result1 = result1list[e];
-                            }else
-                            {
-                                result1 = result1 + result1list[e];
-                            }
-                        }
-                        for (int e = 1; e < number2; e++)
-                        {
-                            if ((number2 % e) == 0)
-                            {
-                                result2list.Add(e);
-                            }
-                        }
-                        for (int e = 0; e < result2list.Count; e++)
-                        {
-                            if (result2 == 0)
-                            {
-                                result2 = result2list[e];
-                            }else
-                            {
-                                result2 = result2 + result2list[e];
-                            }
-                        }
-                        if (result1 == number2 && result2 == number1)
-                        {
-                            if (!(result1 == result2))
-                            {
-                                TimeSpan ts = stopwatch.Elapsed;
-                                String resulttime = String.Format("{00:00}:{01:00}:{02:00}:{03:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                                Console.WriteLine(result1 + "  " + result2+"     "+resulttime);
-                            }
-                        }
-                        number1++;
+            int number2 = 0;
+            for (int i = startNumber; i < endNumber; i++) {
+                for (int j = 1; j < i; j++) {
+                    if (i % j == 0) {
+                        number1 += j;
                     }
                 }
+                for (int j = 1; j < number1; j++) {
+                    if (number1 % j == 0) {
+                        number2 += j;
+                    }
+                }
+                if (number2 == i && number1 != number2) {
+                    TimeSpan ts = stopwatch.Elapsed;
+                    String resulttime = String.Format("{00:00}:{01:00}:{02:00}:{03:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                    Console.WriteLine(number1 + "  " + number2 + "     " + resulttime);
+                }
+                number1 = 0;
+                number2 = 0;
             }
             Console.WriteLine("Thread: " + thread + "  ist fertig");
             finished(thread);
         }
-
         static void finished(int thread)
         {
             if (thread == 1)
