@@ -473,6 +473,7 @@ namespace BefreundeteZahlenBerechnen {
 
         public static void updateProgressBar() {
             List<int> progressStorage = new List<int>();
+            drawTextProgressBar(progress, loop, 0);
             while (barRunning) {
                 for(int i = 0; i < 5; i++) {
                     int tempProgress = progress;
@@ -504,14 +505,14 @@ namespace BefreundeteZahlenBerechnen {
             //draw filled part
             int position = 1;
             for (int i = 0; i <= onechunk * progress; i++) {
-                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.BackgroundColor = ConsoleColor.Green;
                 Console.CursorLeft = position++;
                 Console.Write(" ");
             }
 
             //draw unfilled part
             for (int i = position; i <= 31; i++) {
-                Console.BackgroundColor = ConsoleColor.Green;
+                Console.BackgroundColor = ConsoleColor.Gray;
                 Console.CursorLeft = position++;
                 Console.Write(" ");
             }
