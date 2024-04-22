@@ -461,19 +461,34 @@ namespace BefreundeteZahlenBerechnen {
             thread.Start();
         }
 
+        public static int getMedian(List<int> list) {
+            int temp = 0;
+
+            foreach(int i in list) {
+                temp += i;
+            }
+
+            return temp / list.Count;
+        }
+
         public static void updateProgressBar() {
             while (barRunning) {
-                Thread.Sleep(100);
-                drawTextProgressBar(progress, loop);
+                List<int> progressStorage = new List<int>();
+                for(int i = 0; i < 5; i++) {
+                    int tempProgress = progress;
+                    Thread.Sleep(200);
+                    progressStorage.Add(progress - tempProgress);
+                }
+                drawTextProgressBar(progress, loop, ((loop - progress) / getMedian(progressStorage)));
             }
             progress = loop;
-            drawTextProgressBar(progress, loop);
+            drawTextProgressBar(progress, loop, 0);
             TimeSpan ts = stopwatch.Elapsed;
             String resulttime = String.Format("{00:00}:{01:00}:{02:00}:{03:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
             Console.WriteLine("Benchmarkt fertig nach:  " + resulttime);
         }
 
-        private static void drawTextProgressBar(int progress, int total) {
+        private static void drawTextProgressBar(int progress, int total, int timeRemain) {
             //draw empty progress bar
             Console.CursorLeft = 0;
             Console.Write("["); //start
@@ -484,7 +499,7 @@ namespace BefreundeteZahlenBerechnen {
 
             //draw filled part
             int position = 1;
-            for (int i = 0; i < onechunk * progress; i++) {
+            for (int i = 0; i <= onechunk * progress; i++) {
                 Console.BackgroundColor = ConsoleColor.Gray;
                 Console.CursorLeft = position++;
                 Console.Write(" ");
@@ -500,7 +515,7 @@ namespace BefreundeteZahlenBerechnen {
             //draw totals
             Console.CursorLeft = 35;
             Console.BackgroundColor = ConsoleColor.Black;
-            Console.Write(progress.ToString() + " of " + total.ToString() + "    "); //blanks at the end remove any excess
+            Console.Write(timeRemain == 0 ? progress.ToString() + " of " + total.ToString() + "    " : progress.ToString() + " of " + total.ToString() + "    Remaining time: " + String.Format("{00:00}:{01:00}", timeRemain / 60, timeRemain % 60)); //blanks at the end remove any excess
         }
 
         public static void calc(int startNumber, int endNumber, int thread) {
@@ -531,6 +546,7 @@ namespace BefreundeteZahlenBerechnen {
             }
             return divisorSum - value;
         }
+
         public static void finished(int thread) {
             if (thread == 1) {
                 thread1finish = true;
