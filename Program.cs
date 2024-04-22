@@ -14,7 +14,8 @@ namespace BefreundeteZahlenBerechnen {
 
 
 
-
+        private static int progress = 0;
+        private static bool barRunning = true;
 
         private static bool thread1finish = true;
         private static bool thread2finish = true;
@@ -453,8 +454,55 @@ namespace BefreundeteZahlenBerechnen {
                 t38.Start();
                 t39.Start();
                 t40.Start();
+
+
             }
+            Thread thread = new Thread(() => { updateProgressBar(); });
+            thread.Start();
         }
+
+        public static void updateProgressBar() {
+            while (barRunning) {
+                Thread.Sleep(100);
+                drawTextProgressBar(progress, loop);
+            }
+            progress = loop;
+            drawTextProgressBar(progress, loop);
+            TimeSpan ts = stopwatch.Elapsed;
+            String resulttime = String.Format("{00:00}:{01:00}:{02:00}:{03:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+            Console.WriteLine("Benchmarkt fertig nach:  " + resulttime);
+        }
+
+        private static void drawTextProgressBar(int progress, int total) {
+            //draw empty progress bar
+            Console.CursorLeft = 0;
+            Console.Write("["); //start
+            Console.CursorLeft = 32;
+            Console.Write("]"); //end
+            Console.CursorLeft = 1;
+            float onechunk = 30.0f / total;
+
+            //draw filled part
+            int position = 1;
+            for (int i = 0; i < onechunk * progress; i++) {
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.CursorLeft = position++;
+                Console.Write(" ");
+            }
+
+            //draw unfilled part
+            for (int i = position; i <= 31; i++) {
+                Console.BackgroundColor = ConsoleColor.Green;
+                Console.CursorLeft = position++;
+                Console.Write(" ");
+            }
+
+            //draw totals
+            Console.CursorLeft = 35;
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Write(progress.ToString() + " of " + total.ToString() + "    "); //blanks at the end remove any excess
+        }
+
         public static void calc(int startNumber, int endNumber, int thread) {
             worked(thread);
             for (int i = startNumber; i < endNumber; i++) {
@@ -463,10 +511,11 @@ namespace BefreundeteZahlenBerechnen {
                 if (number2 == i && number1 != number2) {
                     TimeSpan ts = stopwatch.Elapsed;
                     String resulttime = String.Format("{00:00}:{01:00}:{02:00}:{03:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                    Console.WriteLine(number1 + "  " + number2 + "     " + resulttime);
+                    //Console.WriteLine(number1 + "  " + number2 + "     " + resulttime);
                 }
+                progress++;
             }
-            Console.WriteLine("Thread: " + thread + "  ist fertig");
+            //Console.WriteLine("Thread: " + thread + "  ist fertig");
             finished(thread);
         }
 
@@ -603,11 +652,16 @@ namespace BefreundeteZahlenBerechnen {
             if (thread == 40) {
                 thread40finish = true;
             }
-            if (thread1finish && thread2finish && thread3finish && thread4finish && thread5finish && thread6finish && thread7finish && thread8finish && thread9finish && thread10finish && thread11finish && thread12finish && thread13finish && thread14finish && thread15finish && thread16finish && thread17finish && thread18finish && thread19finish && thread20finish && thread21finish && thread22finish && thread23finish && thread24finish && thread25finish && thread26finish && thread27finish && thread28finish && thread29finish && thread30finish && thread31finish && thread32finish && thread33finish && thread34finish && thread35finish && thread36finish && thread37finish && thread38finish && thread39finish && thread40finish) {
-                TimeSpan ts = stopwatch.Elapsed;
-                String resulttime = String.Format("{00:00}:{01:00}:{02:00}:{03:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                Console.WriteLine("Benchmarkt fertig nach:  " + resulttime);
+            if (isFinished()) {
+                barRunning = false;
             }
+        }
+
+        public static bool isFinished() {
+            if (thread1finish && thread2finish && thread3finish && thread4finish && thread5finish && thread6finish && thread7finish && thread8finish && thread9finish && thread10finish && thread11finish && thread12finish && thread13finish && thread14finish && thread15finish && thread16finish && thread17finish && thread18finish && thread19finish && thread20finish && thread21finish && thread22finish && thread23finish && thread24finish && thread25finish && thread26finish && thread27finish && thread28finish && thread29finish && thread30finish && thread31finish && thread32finish && thread33finish && thread34finish && thread35finish && thread36finish && thread37finish && thread38finish && thread39finish && thread40finish) {
+                return true;
+            }
+            return false;
         }
 
         public static void worked(int thread) {
