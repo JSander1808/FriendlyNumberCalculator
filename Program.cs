@@ -472,14 +472,18 @@ namespace BefreundeteZahlenBerechnen {
         }
 
         public static void updateProgressBar() {
+            List<int> progressStorage = new List<int>();
             while (barRunning) {
-                List<int> progressStorage = new List<int>();
                 for(int i = 0; i < 5; i++) {
                     int tempProgress = progress;
-                    Thread.Sleep(200);
+                    Thread.Sleep(100);
+                    if (progressStorage.Count >= 20) {
+                        progressStorage.Remove(0);
+                    }
                     progressStorage.Add(progress - tempProgress);
                 }
-                drawTextProgressBar(progress, loop, ((loop - progress) / getMedian(progressStorage)));
+                int remainTime = (loop - progress) / getMedian(progressStorage);
+                drawTextProgressBar(progress, loop, remainTime / 2);
             }
             progress = loop;
             drawTextProgressBar(progress, loop, 0);
